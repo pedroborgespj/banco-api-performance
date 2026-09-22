@@ -2,8 +2,11 @@ import http from 'k6/http'
 import { sleep, check } from 'k6'
 
 export const options = {
-    vus: 10,
-    duration: '30s',
+    stages: [
+        { duration: '5s', target: 10 },
+        { duration: '20s', target: 10 },
+        { duration: '5s', target: 0 }
+    ],
     thresholds: {
         http_req_duration: ['p(90)<3000', 'max<5000'],
         http_req_failed: ['rate<0.01']
@@ -28,7 +31,7 @@ export default function () {
 
     check(res, {
         'is status 200': (r) => r.status === 200,
-        'is token a string': (r) => typeof(r.json().token) == 'string'  
+        'is token a string': (r) => typeof (r.json().token) == 'string'
     })
 
     sleep(1)
